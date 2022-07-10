@@ -1,0 +1,51 @@
+﻿@page "/fetchdata"
+
+<PageTitle>Weather forecast</PageTitle>
+
+@using BlazorState.Data
+@using BlazorState.Features.WeatherUseCase
+@using static BlazorState.Features.WeatherUseCase.WeatherState
+@inject WeatherForecastService ForecastService
+@inherits BlazorStateComponent
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (_weatherState.IsLoading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in _weatherState.Forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    WeatherState _weatherState => GetState<WeatherState>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Mediator.Send(new GetWeatherForecastDataAction());
+    }
+}
